@@ -26,9 +26,6 @@ public class Patient {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Column(nullable = false)
-    private int age;
-
     @OneToMany(mappedBy = "patient", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Appointment> appointment = new ArrayList<>();
+    private List<Appointment> appointments = new ArrayList<>();
 }
