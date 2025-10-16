@@ -13,15 +13,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.AccessDeniedHandler;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 
 @Configuration
 @RequiredArgsConstructor
 public class WebSecurityConfig {
-
-    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -33,8 +29,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name())
                         .requestMatchers("/patients/**").hasRole(RoleType.PATIENT.name())
                         .requestMatchers("/doctors/**").hasRole(RoleType.DOCTOR.name())
-                        .anyRequest().authenticated()
-        );
+                        .anyRequest().authenticated());
 
         return httpSecurity.build();
     }
