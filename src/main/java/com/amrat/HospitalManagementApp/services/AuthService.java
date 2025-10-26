@@ -4,9 +4,11 @@ import com.amrat.HospitalManagementApp.dtos.LoginRequestDto;
 import com.amrat.HospitalManagementApp.dtos.LoginResponseDto;
 import com.amrat.HospitalManagementApp.dtos.SignupRequestDto;
 import com.amrat.HospitalManagementApp.dtos.SignupResponseDto;
+import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;
+import com.amrat.HospitalManagementApp.repositories.DoctorRepository;
 import com.amrat.HospitalManagementApp.repositories.PatientRepository;
 import com.amrat.HospitalManagementApp.repositories.UserRepository;
 import com.amrat.HospitalManagementApp.util.AuthUtil;
@@ -31,6 +33,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PatientRepository patientRepository;
+    private final DoctorRepository doctorRepository;
     private final ModelMapper modelMapper;
 
     @Transactional
@@ -74,4 +77,34 @@ public class AuthService {
 
         return modelMapper.map(user, SignupResponseDto.class);
     }
+
+
+//    @Transactional
+//    public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
+//        User user = userRepository.findByUsername(signupRequestDto.getEmail()).orElse(null);
+//
+//        if (user != null){
+//            throw new IllegalArgumentException("User already exists.");
+//        }
+//
+//        Set<RoleType> roles = new HashSet<>();
+//        roles.add(RoleType.ADMIN);
+//
+//        user = User.builder()
+//                .username(signupRequestDto.getEmail())
+//                .password(passwordEncoder.encode(signupRequestDto.getPassword()))
+//                .roles(roles)
+//                .build();
+//        user = userRepository.save(user);
+//
+//        Doctor doctor = Doctor.builder()
+//                .name(signupRequestDto.getName())
+//                .email(signupRequestDto.getEmail())
+//                .user(user)
+//                .qualifications(signupRequestDto.getQualifications())
+//                .build();
+//        doctorRepository.save(doctor);
+//
+//        return modelMapper.map(user, SignupResponseDto.class);
+//    }
 }
