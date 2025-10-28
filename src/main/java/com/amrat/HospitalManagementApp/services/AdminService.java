@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -52,6 +53,12 @@ public class AdminService {
         doctorRepository.save(doctor);
 
         return modelMapper.map(doctor, DoctorDto.class);
+    }
+
+    public List<DoctorDto> allDoctors(){
+        List<Doctor> doctors = doctorRepository.allDoctors();
+
+        return doctors.stream().map(doctor -> modelMapper.map(doctor, DoctorDto.class)).toList();
     }
 
 }

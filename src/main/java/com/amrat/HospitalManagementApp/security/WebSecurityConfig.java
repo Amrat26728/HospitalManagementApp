@@ -38,7 +38,6 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandlingConfigurer -> {
-                    System.out.println("exception handling...........");
                     exceptionHandlingConfigurer.accessDeniedHandler(((request, response, accessDeniedException) -> {
                         handlerExceptionResolver.resolveException(request, response, null, accessDeniedException);
                     }));

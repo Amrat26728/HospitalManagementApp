@@ -24,10 +24,6 @@ public class Appointment {
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
 
-    private String patientName;
-
-    private int patientAge;
-
     @Column(nullable = false)
     private LocalDateTime appointmentDate;
 
