@@ -27,20 +27,13 @@ public class AppointmentService {
 
     private final ModelMapper modelMapper;
 
-    public List<AppointmentDto> getAllAppointmentsOfPatient(Integer pageNumber, Integer pageSize){
-        // check user in context
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        // check user exists
-        Boolean userExists = userRepository.existsById(user.getId());
-        // check patient exists
-        Boolean patientExists = patientRepository.existsById(user.getId());
-        // get appointments
-        if (userExists && patientExists){
-            Patient patient = patientRepository.findById(user.getId()).orElse(null);
-            Page<Appointment> appointments= appointmentRepository.findByPatient(patient, PageRequest.of(pageNumber, pageSize));
-            return appointments.stream().map((element) -> modelMapper.map(element, AppointmentDto.class)).toList();
-        } else {
-            throw new EntityNotFoundException("User does not exist.");
-        }
+    public List<AppointmentDto> getAllAppointmentsOfPatient(Long patientId, Integer pageNumber, Integer pageSize){
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
+
+        int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
+
+        Page<Appointment> appointments = appointmentRepository.findByPatient(patient, PageRequest.of(safePage, pageSize));
+
+        return appointments.stream().map(appointment -> modelMapper.map(appointment, AppointmentDto.class)).toList();
     }
 }
