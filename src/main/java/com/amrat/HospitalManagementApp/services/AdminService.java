@@ -1,6 +1,7 @@
 package com.amrat.HospitalManagementApp.services;
 
-import com.amrat.HospitalManagementApp.dtos.DoctorDto;
+import com.amrat.HospitalManagementApp.dtos.RequestDoctorDto;
+import com.amrat.HospitalManagementApp.dtos.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;
@@ -26,7 +27,7 @@ public class AdminService {
     private final ModelMapper modelMapper;
 
     @Transactional
-    public DoctorDto createDoctor(DoctorDto doctorDto){
+    public ResponseDoctorDto createDoctor(RequestDoctorDto doctorDto){
         User user = userRepository.findByUsername(doctorDto.getEmail()).orElse(null);
         if (user != null){
             throw new IllegalArgumentException("User already exists.");
@@ -50,15 +51,15 @@ public class AdminService {
                 .qualifications(doctorDto.getQualifications())
                 .build();
 
-        doctorRepository.save(doctor);
+        doctor = doctorRepository.save(doctor);
 
-        return modelMapper.map(doctor, DoctorDto.class);
+        return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
-    public List<DoctorDto> allDoctors(){
+    public List<RequestDoctorDto> allDoctors(){
         List<Doctor> doctors = doctorRepository.allDoctors();
 
-        return doctors.stream().map(doctor -> modelMapper.map(doctor, DoctorDto.class)).toList();
+        return doctors.stream().map(doctor -> modelMapper.map(doctor, RequestDoctorDto.class)).toList();
     }
 
 }

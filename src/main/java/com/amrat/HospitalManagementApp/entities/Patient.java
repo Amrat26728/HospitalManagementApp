@@ -16,7 +16,7 @@ public class Patient {
     @Id
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId  // maps user id with patient id
     private User user;
 

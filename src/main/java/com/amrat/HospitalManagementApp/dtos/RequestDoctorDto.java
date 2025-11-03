@@ -6,8 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class DoctorDto {
-    private Long id;
+public class RequestDoctorDto {
     private String name;
     private String email;
     private Set<String> qualifications = new HashSet<>();

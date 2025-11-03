@@ -18,7 +18,7 @@ public class Doctor {
     @Id
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     private User user;
 
