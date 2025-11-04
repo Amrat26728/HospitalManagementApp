@@ -16,17 +16,21 @@ public class PatientController {
 
     private final AppointmentService appointmentService;
 
-    @GetMapping("/{patientId}/appointments")
-    public ResponseEntity<List<ResponseAppointmentDto>> getAllAppointments(@PathVariable Long patientId,
-                                                                          @RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+    @GetMapping("/appointments")
+    public ResponseEntity<List<ResponseAppointmentDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                           @RequestParam(value = "size", defaultValue = "2") Integer pageSize
     ){
-        return ResponseEntity.ok(appointmentService.getAllAppointmentsOfPatient(patientId, pageNumber, pageSize));
+        return ResponseEntity.ok(appointmentService.getAllAppointmentsOfPatient(pageNumber, pageSize));
     }
 
     @PostMapping("/appointments/book-appointment")
     public ResponseEntity<ResponseAppointmentDto> bookAppointment(@RequestBody RequestAppointmentDto appointmentDto){
         return ResponseEntity.ok(appointmentService.bookAppointment(appointmentDto));
+    }
+
+    @PostMapping("/{appointmentId}/cancel-appointment")
+    public ResponseEntity<Boolean> cancelAppointment(@PathVariable Long appointmentId){
+        return ResponseEntity.ok(appointmentService.cancelAppointment(appointmentId));
     }
 
 }

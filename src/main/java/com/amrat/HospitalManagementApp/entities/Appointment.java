@@ -2,6 +2,7 @@ package com.amrat.HospitalManagementApp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -29,4 +30,12 @@ public class Appointment {
 
     @Column(nullable = false)
     private String reason;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean canceled = false;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

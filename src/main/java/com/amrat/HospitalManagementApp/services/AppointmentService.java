@@ -14,11 +14,13 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +32,9 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final CurrentUserInfo currentUserInfo;
 
-    public List<ResponseAppointmentDto> getAllAppointmentsOfPatient(Long patientId, Integer pageNumber, Integer pageSize){
-        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
+    public List<ResponseAppointmentDto> getAllAppointmentsOfPatient(Integer pageNumber, Integer pageSize){
+        User user = currentUserInfo.currentUserInfo();
+        Patient patient = patientRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
         int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
 
@@ -58,5 +61,20 @@ public class AppointmentService {
         appointment = appointmentRepository.save(appointment);
 
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
+    }
+
+    @Transactional
+    public boolean cancelAppointment(Long appointmentId){
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment Does not exist."));
+        User currentUser = currentUserInfo.currentUserInfo();
+
+        // check if appointment belongs to currently logged-in user or not
+        if (!Objects.equals(currentUser.getId(), appointment.getPatient().getId())){
+            throw new AuthorizationDeniedException("You are not authorized to cancel this appointment.");
+        }
+
+        appointment.setCanceled(true);
+        appointmentRepository.save(appointment);
+        return true;
     }
 }

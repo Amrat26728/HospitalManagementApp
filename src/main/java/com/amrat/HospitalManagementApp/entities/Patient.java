@@ -2,7 +2,9 @@ package com.amrat.HospitalManagementApp.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,4 +30,8 @@ public class Patient {
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Appointment> appointments = new ArrayList<>();
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createAt;
 }
