@@ -56,6 +56,8 @@ public class AppointmentService {
                 .reason(requestAppointmentDto.getReason())
                 .doctor(doctor)
                 .patient(patient)
+                .canceled(false)
+                .done(false)
                 .build();
 
         appointment = appointmentRepository.save(appointment);

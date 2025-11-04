@@ -10,4 +10,6 @@ public class ResponseAppointmentDto {
     private LocalDateTime appointmentTime;
     private String reason;
     private ResponseDoctorDto doctor;
+    private boolean canceled;
+    private boolean done;
 }

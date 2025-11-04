@@ -31,9 +31,11 @@ public class Appointment {
     @Column(nullable = false)
     private String reason;
 
-    @Builder.Default
     @Column(nullable = false)
-    private boolean canceled = false;
+    private boolean canceled;
+
+    @Column(nullable = false)
+    private boolean done;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
