@@ -12,10 +12,7 @@ import java.util.Set;
 
 @Entity
 @Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Doctor {
     @Id
     private Long id;
@@ -30,7 +27,7 @@ public class Doctor {
     @Column(unique = true, nullable = false)
     private String email;
 
-    private Set<String> qualifications = new HashSet<>();
+    private Set<String> qualifications;
 
     @OneToMany(mappedBy = "doctor")
     private List<Appointment> appointments = new ArrayList<>();
@@ -38,4 +35,27 @@ public class Doctor {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public Doctor(User user, String name, String email, Set<String> qualifications){
+        if (user == null){
+            throw new IllegalArgumentException("User is required");
+        }
+
+        if (name == null || name.isEmpty()){
+            throw new IllegalArgumentException("Name is required");
+        }
+
+        if (email == null || email.isEmpty()){
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        if (qualifications == null || qualifications.isEmpty()){
+            throw new IllegalArgumentException("Qualifications are required");
+        }
+
+        this.user = user;
+        this.name = name;
+        this.email = email;
+        this.qualifications = new HashSet<>(qualifications);
+    }
 }

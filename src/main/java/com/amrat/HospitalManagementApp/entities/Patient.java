@@ -6,14 +6,13 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-@Builder
 public class Patient {
     @Id
     private Long id;
@@ -34,4 +33,22 @@ public class Patient {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createAt;
+
+    public Patient(User user, String name, String email){
+        if (user == null){
+            throw new IllegalArgumentException("User is required");
+        }
+
+        if (name == null || name.isEmpty()){
+            throw new IllegalArgumentException("Name is required");
+        }
+
+        if (email == null || email.isEmpty()){
+            throw new IllegalArgumentException("Email is required");
+        }
+
+        this.user = user;
+        this.name = name;
+        this.email = email;
+    }
 }

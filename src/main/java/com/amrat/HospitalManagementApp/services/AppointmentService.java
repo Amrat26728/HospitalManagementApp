@@ -53,14 +53,8 @@ public class AppointmentService {
         Patient patient = patientRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Patient does not exist."));
 
         Doctor doctor = doctorRepository.findById(requestAppointmentDto.getDoctorId()).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
-        Appointment appointment = Appointment.builder()
-                .appointmentDate(requestAppointmentDto.getAppointmentTime())
-                .reason(requestAppointmentDto.getReason())
-                .doctor(doctor)
-                .patient(patient)
-                .canceled(false)
-                .done(false)
-                .build();
+
+        Appointment appointment = new Appointment(doctor, patient, requestAppointmentDto.getReason(), requestAppointmentDto.getAppointmentTime());
 
         appointment = appointmentRepository.save(appointment);
 
@@ -78,7 +72,7 @@ public class AppointmentService {
             throw new AuthorizationDeniedException("You are not authorized to cancel this appointment.");
         }
 
-        appointment.setCanceled(true);
+        appointment.cancel();
         appointment = appointmentRepository.save(appointment);
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
     }
@@ -98,11 +92,12 @@ public class AppointmentService {
     // doctor make appointment done
     @Transactional
     public ResponseAppointmentDto completeAppointment(Long appointmentId){
+        User user = currentUserInfo.currentUserInfo();
         Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment does not exist"));
-        if (appointment.isCanceled()){
-            throw new RuntimeException("Appointment is canceled");
+        if (!user.getId().equals(appointment.getDoctor().getId())){
+            throw new IllegalArgumentException("Appointment does not belong to you.");
         }
-        appointment.setDone(true);
+        appointment.done();
         appointment = appointmentRepository.save(appointment);
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
     }

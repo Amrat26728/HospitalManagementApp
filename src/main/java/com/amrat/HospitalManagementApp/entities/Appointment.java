@@ -7,11 +7,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@Setter
-@Builder
 public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,4 +37,43 @@ public class Appointment {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    public Appointment(Doctor doctor, Patient patient, String reason, LocalDateTime appointmentDate){
+        if (doctor == null){
+            throw new IllegalArgumentException("Doctor is required.");
+        }
+
+        if (patient == null){
+            throw new IllegalArgumentException("Patient is required.");
+        }
+
+        if (reason == null || reason.isEmpty()){
+            throw new IllegalArgumentException("Reason is required.");
+        }
+
+        if (appointmentDate == null || appointmentDate.isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("Date and Time should be correct.");
+        }
+
+        this.doctor = doctor;
+        this.patient = patient;
+        this.reason = reason;
+        this.appointmentDate = appointmentDate;
+        this.canceled = false;
+        this.done = false;
+    }
+
+    public void cancel(){
+        if (this.done){
+            throw new IllegalArgumentException("Completed appointment can not be canceled.");
+        }
+        this.canceled = true;
+    }
+
+    public void done() {
+        if (this.canceled){
+            throw new IllegalArgumentException("Canceled appointment can not be marked complete.");
+        }
+        this.done = true;
+    }
 }

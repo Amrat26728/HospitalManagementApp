@@ -20,46 +20,4 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class AdminService {
-
-    private final DoctorRepository doctorRepository;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final ModelMapper modelMapper;
-
-    @Transactional
-    public ResponseDoctorDto createDoctor(RequestDoctorDto doctorDto){
-        User user = userRepository.findByUsername(doctorDto.getEmail()).orElse(null);
-        if (user != null){
-            throw new IllegalArgumentException("User already exists.");
-        }
-
-        Set<RoleType> roles = new HashSet<>();
-        roles.add(RoleType.DOCTOR);
-
-        user = User.builder()
-                .username(doctorDto.getEmail())
-                .password(passwordEncoder.encode("12345"))
-                .roles(roles)
-                .build();
-
-        userRepository.save(user);
-
-        Doctor doctor = Doctor.builder()
-                .user(user)
-                .email(doctorDto.getEmail())
-                .name(doctorDto.getName())
-                .qualifications(doctorDto.getQualifications())
-                .build();
-
-        doctor = doctorRepository.save(doctor);
-
-        return modelMapper.map(doctor, ResponseDoctorDto.class);
-    }
-
-    public List<RequestDoctorDto> allDoctors(){
-        List<Doctor> doctors = doctorRepository.allDoctors();
-
-        return doctors.stream().map(doctor -> modelMapper.map(doctor, RequestDoctorDto.class)).toList();
-    }
-
 }

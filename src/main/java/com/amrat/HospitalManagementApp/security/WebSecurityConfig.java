@@ -33,8 +33,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**", "/auth/**").permitAll()
                         .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name())
-                        .requestMatchers("/patients/**").hasRole(RoleType.PATIENT.name())
-                        .requestMatchers("/doctors/**").hasRole(RoleType.DOCTOR.name())
+                        .requestMatchers("/patient/**").hasRole(RoleType.PATIENT.name())
+                        .requestMatchers("/doctor/**").hasRole(RoleType.DOCTOR.name())
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandlingConfigurer -> {

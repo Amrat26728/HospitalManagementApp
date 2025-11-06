@@ -55,22 +55,18 @@ public class AuthService {
         }
 
         Set<RoleType> roles = new HashSet<>();
-        roles.add(RoleType.PATIENT);
+        roles.add(RoleType.ADMIN);
 
-        user = User.builder()
-                .username(signupRequestDto.getEmail())
-                .password(passwordEncoder.encode(signupRequestDto.getPassword()))
-                .roles(roles)
-                .build();
+        if (signupRequestDto.getPassword().isEmpty()){
+            throw new IllegalArgumentException("Password is required.");
+        }
+
+        user = new User(signupRequestDto.getEmail(), passwordEncoder.encode(signupRequestDto.getPassword()), roles);
         user = userRepository.save(user);
 
-        Patient patient = Patient.builder()
-                .email(signupRequestDto.getEmail())
-                .name(signupRequestDto.getName())
-                .user(user)
-                .build();
-
-        patientRepository.save(patient);
+//        Patient patient = new Patient(user, signupRequestDto.getName(), signupRequestDto.getEmail());
+//
+//        patientRepository.save(patient);
 
         return modelMapper.map(user, SignupResponseDto.class);
     }

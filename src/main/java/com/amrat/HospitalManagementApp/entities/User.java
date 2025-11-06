@@ -12,11 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Setter
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
         name = "app_user"
 )
@@ -32,7 +29,7 @@ public class User implements UserDetails {
 
     @ElementCollection(fetch = FetchType.EAGER) // this will create new table roles
     @Enumerated(EnumType.STRING)
-    private Set<RoleType> roles = new HashSet<>();
+    private Set<RoleType> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -41,5 +38,24 @@ public class User implements UserDetails {
                 role -> authorities.add(new SimpleGrantedAuthority("ROLE_"+role.name()))
         );
         return authorities;
+    }
+
+    public User(String username, String password, Set<RoleType> roles){
+
+        if (username == null || username.isEmpty()){
+            throw new IllegalArgumentException("Username is required");
+        }
+
+        if (password == null || password.isEmpty()){
+            throw new IllegalArgumentException("Password are required");
+        }
+
+        if (roles == null || roles.isEmpty()){
+            throw new IllegalArgumentException("Roles are required");
+        }
+
+        this.username = username;
+        this.password = password;
+        this.roles = new HashSet<>(roles);
     }
 }
