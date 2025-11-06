@@ -11,5 +11,4 @@ public class PatientDto {
     private String name;
     private String email;
     private LocalDateTime createdAt;
-    private List<ResponseAppointmentDto> appointments;
 }

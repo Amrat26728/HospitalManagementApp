@@ -1,6 +1,7 @@
 package com.amrat.HospitalManagementApp.repositories;
 
 import com.amrat.HospitalManagementApp.entities.Doctor;
+import com.amrat.HospitalManagementApp.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

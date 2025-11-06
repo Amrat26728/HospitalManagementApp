@@ -26,7 +26,7 @@ public class PatientController {
     public ResponseEntity<List<ResponseAppointmentDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                           @RequestParam(value = "size", defaultValue = "2") Integer pageSize
     ){
-        return ResponseEntity.ok(appointmentService.getAllAppointmentsOfPatient(pageNumber, pageSize));
+        return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize));
     }
 
     @PostMapping("/appointments/book-appointment")
@@ -35,7 +35,7 @@ public class PatientController {
     }
 
     @PostMapping("/{appointmentId}/cancel-appointment")
-    public ResponseEntity<Boolean> cancelAppointment(@PathVariable Long appointmentId){
+    public ResponseEntity<ResponseAppointmentDto> cancelAppointment(@PathVariable Long appointmentId){
         return ResponseEntity.ok(appointmentService.cancelAppointment(appointmentId));
     }
 
