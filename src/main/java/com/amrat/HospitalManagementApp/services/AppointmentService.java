@@ -32,14 +32,24 @@ public class AppointmentService {
     private final DoctorRepository doctorRepository;
     private final CurrentUserInfo currentUserInfo;
 
-    // get patient current patient user appointments
-    public List<ResponseAppointmentDto> getAppointmentsOfPatient(Integer pageNumber, Integer pageSize){
-        User user = currentUserInfo.currentUserInfo();
-        Patient patient = patientRepository.findById(user.getId()).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
+    // get current patient user appointments
+    public List<ResponseAppointmentDto> getAppointmentsOfPatient(Integer pageNumber, Integer pageSize, Long patientId){
+        Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
         int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
 
         Page<Appointment> appointments = appointmentRepository.findByPatient(patient, PageRequest.of(safePage, pageSize));
+
+        return appointments.stream().map(appointment -> modelMapper.map(appointment, ResponseAppointmentDto.class)).toList();
+    }
+
+    // get current logged-in doctor appointments
+    public List<ResponseAppointmentDto> getAppointmentsOfDoctor(Integer pageNumber, Integer pageSize, Long doctorId){
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
+
+        int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
+
+        Page<Appointment> appointments = appointmentRepository.findByDoctor(doctor, PageRequest.of(safePage, pageSize));
 
         return appointments.stream().map(appointment -> modelMapper.map(appointment, ResponseAppointmentDto.class)).toList();
     }
@@ -54,7 +64,7 @@ public class AppointmentService {
 
         Doctor doctor = doctorRepository.findById(requestAppointmentDto.getDoctorId()).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
 
-        Appointment appointment = new Appointment(doctor, patient, requestAppointmentDto.getReason(), requestAppointmentDto.getAppointmentTime());
+        Appointment appointment = new Appointment(doctor, patient, requestAppointmentDto.getReason(), requestAppointmentDto.getAppointmentDate(), requestAppointmentDto.getAppointmentTime());
 
         appointment = appointmentRepository.save(appointment);
 
@@ -75,18 +85,6 @@ public class AppointmentService {
         appointment.cancel();
         appointment = appointmentRepository.save(appointment);
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
-    }
-
-    // get current logged-in doctor appointments
-    public List<ResponseAppointmentDto> getAppointmentsOfDoctor(Integer pageNumber, Integer pageSize){
-        User user = currentUserInfo.currentUserInfo();
-        Doctor doctor = doctorRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
-
-        int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
-
-        Page<Appointment> appointments = appointmentRepository.findByDoctor(doctor, PageRequest.of(safePage, pageSize));
-
-        return appointments.stream().map(appointment -> modelMapper.map(appointment, ResponseAppointmentDto.class)).toList();
     }
 
     // doctor make appointment done

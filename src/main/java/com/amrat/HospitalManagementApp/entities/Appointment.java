@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +25,10 @@ public class Appointment {
     private Patient patient;
 
     @Column(nullable = false)
-    private LocalDateTime appointmentDate;
+    private LocalDate appointmentDate;
+
+    @Column(nullable = false)
+    private LocalTime appointmentTime;
 
     @Column(nullable = false)
     private String reason;
@@ -38,7 +43,7 @@ public class Appointment {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    public Appointment(Doctor doctor, Patient patient, String reason, LocalDateTime appointmentDate){
+    public Appointment(Doctor doctor, Patient patient, String reason, LocalDate appointmentDate, LocalTime appointmentTime){
         if (doctor == null){
             throw new IllegalArgumentException("Doctor is required.");
         }
@@ -51,7 +56,11 @@ public class Appointment {
             throw new IllegalArgumentException("Reason is required.");
         }
 
-        if (appointmentDate == null || appointmentDate.isBefore(LocalDateTime.now())){
+        if (appointmentDate == null || appointmentDate.isBefore(LocalDate.now())){
+            throw new IllegalArgumentException("Date and Time should be correct.");
+        }
+
+        if (appointmentTime == null || appointmentTime.isBefore(LocalTime.now())){
             throw new IllegalArgumentException("Date and Time should be correct.");
         }
 
@@ -59,6 +68,7 @@ public class Appointment {
         this.patient = patient;
         this.reason = reason;
         this.appointmentDate = appointmentDate;
+        this.appointmentTime = appointmentTime;
         this.canceled = false;
         this.done = false;
     }

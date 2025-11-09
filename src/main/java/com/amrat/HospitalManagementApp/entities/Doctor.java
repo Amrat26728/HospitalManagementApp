@@ -36,6 +36,8 @@ public class Doctor {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    private boolean isActive;
+
     public Doctor(User user, String name, String email, Set<String> qualifications){
         if (user == null){
             throw new IllegalArgumentException("User is required");
@@ -57,5 +59,10 @@ public class Doctor {
         this.name = name;
         this.email = email;
         this.qualifications = new HashSet<>(qualifications);
+        this.isActive = true;
+    }
+
+    public void inactive(){
+        this.isActive = false;
     }
 }

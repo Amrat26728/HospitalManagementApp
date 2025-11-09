@@ -4,9 +4,11 @@ import com.amrat.HospitalManagementApp.dtos.PatientDto;
 import com.amrat.HospitalManagementApp.dtos.RequestAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.ResponseAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.ResponseDoctorDto;
+import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
 import com.amrat.HospitalManagementApp.services.DoctorService;
 import com.amrat.HospitalManagementApp.services.PatientService;
+import com.amrat.HospitalManagementApp.util.CurrentUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +23,14 @@ public class PatientController {
     private final AppointmentService appointmentService;
     private final DoctorService doctorService;
     private final PatientService patientService;
+    private final CurrentUserInfo currentUserInfo;
 
     @GetMapping("/appointments")
     public ResponseEntity<List<ResponseAppointmentDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                           @RequestParam(value = "size", defaultValue = "2") Integer pageSize
     ){
-        return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize));
+        User user = currentUserInfo.currentUserInfo();
+        return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize, user.getId()));
     }
 
     @PostMapping("/appointments/book-appointment")
@@ -40,8 +44,8 @@ public class PatientController {
     }
 
     @GetMapping("/doctors")
-    public ResponseEntity<List<ResponseDoctorDto>> getAllDoctors(){
-        return ResponseEntity.ok(doctorService.getAllDoctors());
+    public ResponseEntity<List<ResponseDoctorDto>> getActiveDoctors(){
+        return ResponseEntity.ok(doctorService.getDoctors(true));
     }
 
     @GetMapping("/me")

@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
-    @Query(value = "SELECT * FROM doctor", nativeQuery = true)
-    List<Doctor> allDoctors();
+    List<Doctor> findByIsActive(boolean isActive);
 
 }

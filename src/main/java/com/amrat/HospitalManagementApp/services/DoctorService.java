@@ -30,10 +30,11 @@ public class DoctorService {
     private final EmailService emailService;
 
     // get all doctors
-    public List<ResponseDoctorDto> getAllDoctors(){
-        List<Doctor> doctors = doctorRepository.findAll();
-
-        return doctors.stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+    public List<ResponseDoctorDto> getDoctors(Boolean isActive){
+        if (isActive == null){
+            return doctorRepository.findAll().stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+        }
+        return doctorRepository.findByIsActive(isActive).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
     }
 
     // get doctor profile
@@ -68,10 +69,13 @@ public class DoctorService {
         return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
-    public List<RequestDoctorDto> allDoctors(){
-        List<Doctor> doctors = doctorRepository.allDoctors();
-
-        return doctors.stream().map(doctor -> modelMapper.map(doctor, RequestDoctorDto.class)).toList();
+    @Transactional
+    public void deleteDoctor(Long doctorId){
+        User user = userRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("User does not exit."));
+        Doctor doctor = doctorRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
+        userRepository.delete(user);
+        doctor.inactive();
+        doctorRepository.save(doctor);
     }
 
 }
