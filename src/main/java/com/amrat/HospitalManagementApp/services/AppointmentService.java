@@ -1,7 +1,8 @@
 package com.amrat.HospitalManagementApp.services;
 
-import com.amrat.HospitalManagementApp.dtos.RequestAppointmentDto;
-import com.amrat.HospitalManagementApp.dtos.ResponseAppointmentDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.PatientDoctorAppointmentsDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.RequestAppointmentDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;
 import com.amrat.HospitalManagementApp.entities.Appointment;
 import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.entities.Patient;
@@ -33,25 +34,25 @@ public class AppointmentService {
     private final CurrentUserInfo currentUserInfo;
 
     // get current patient user appointments
-    public List<ResponseAppointmentDto> getAppointmentsOfPatient(Integer pageNumber, Integer pageSize, Long patientId){
+    public List<PatientDoctorAppointmentsDto> getAppointmentsOfPatient(Integer pageNumber, Integer pageSize, Long patientId){
         Patient patient = patientRepository.findById(patientId).orElseThrow(() -> new EntityNotFoundException("Patient not found."));
 
         int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
 
         Page<Appointment> appointments = appointmentRepository.findByPatient(patient, PageRequest.of(safePage, pageSize));
 
-        return appointments.stream().map(appointment -> modelMapper.map(appointment, ResponseAppointmentDto.class)).toList();
+        return appointments.stream().map(appointment -> modelMapper.map(appointment, PatientDoctorAppointmentsDto.class)).toList();
     }
 
     // get current logged-in doctor appointments
-    public List<ResponseAppointmentDto> getAppointmentsOfDoctor(Integer pageNumber, Integer pageSize, Long doctorId){
+    public List<PatientDoctorAppointmentsDto> getAppointmentsOfDoctor(Integer pageNumber, Integer pageSize, Long doctorId){
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist"));
 
         int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
 
         Page<Appointment> appointments = appointmentRepository.findByDoctor(doctor, PageRequest.of(safePage, pageSize));
 
-        return appointments.stream().map(appointment -> modelMapper.map(appointment, ResponseAppointmentDto.class)).toList();
+        return appointments.stream().map(appointment -> modelMapper.map(appointment, PatientDoctorAppointmentsDto.class)).toList();
     }
 
     // patient book appointment

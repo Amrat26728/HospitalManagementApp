@@ -1,9 +1,8 @@
-package com.amrat.HospitalManagementApp.dtos;
+package com.amrat.HospitalManagementApp.dtos.patient;
 
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class PatientDto {

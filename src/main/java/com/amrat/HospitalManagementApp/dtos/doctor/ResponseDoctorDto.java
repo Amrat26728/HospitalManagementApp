@@ -1,5 +1,6 @@
-package com.amrat.HospitalManagementApp.dtos;
+package com.amrat.HospitalManagementApp.dtos.doctor;
 
+import com.amrat.HospitalManagementApp.dtos.department.ResponseDepartmentDto;
 import lombok.Data;
 
 import java.util.HashSet;

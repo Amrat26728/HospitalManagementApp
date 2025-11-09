@@ -1,10 +1,12 @@
 package com.amrat.HospitalManagementApp.services;
 
-import com.amrat.HospitalManagementApp.dtos.RequestDoctorDto;
-import com.amrat.HospitalManagementApp.dtos.ResponseDoctorDto;
+import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
+import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
+import com.amrat.HospitalManagementApp.entities.Department;
 import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;
+import com.amrat.HospitalManagementApp.repositories.DepartmentRepository;
 import com.amrat.HospitalManagementApp.repositories.DoctorRepository;
 import com.amrat.HospitalManagementApp.repositories.UserRepository;
 import com.amrat.HospitalManagementApp.util.CurrentUserInfo;
@@ -28,13 +30,16 @@ public class DoctorService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final DepartmentRepository departmentRepository;
+
+    // get doctors
+    public List<ResponseDoctorDto> getDoctors(Boolean isActive){
+        return doctorRepository.findByIsActive(isActive).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+    }
 
     // get all doctors
-    public List<ResponseDoctorDto> getDoctors(Boolean isActive){
-        if (isActive == null){
-            return doctorRepository.findAll().stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
-        }
-        return doctorRepository.findByIsActive(isActive).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+    public List<ResponseDoctorDto> getAllDoctors(){
+        return doctorRepository.findAll().stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
     }
 
     // get doctor profile
@@ -60,22 +65,32 @@ public class DoctorService {
 
         userRepository.save(user);
 
-        Doctor doctor = new Doctor(user, doctorDto.getName(), doctorDto.getEmail(), doctorDto.getQualifications());
+        Doctor doctor;
+
+        if (doctorDto.getDepartmentId() != null){
+            Department department = departmentRepository.findById(doctorDto.getDepartmentId()).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
+            doctor = new Doctor(user, doctorDto.getName(), doctorDto.getEmail(), doctorDto.getQualifications(), department);
+        } else{
+            doctor = new Doctor(user, doctorDto.getName(), doctorDto.getEmail(), doctorDto.getQualifications());
+        }
 
         doctor = doctorRepository.save(doctor);
 
-        emailService.sendCredentials(doctorDto.getEmail(), doctorDto.getEmail(), "1234");
+//        emailService.sendCredentials(doctorDto.getEmail(), doctorDto.getEmail(), "1234");
 
         return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
     @Transactional
-    public void deleteDoctor(Long doctorId){
-        User user = userRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("User does not exit."));
-        Doctor doctor = doctorRepository.findById(user.getId()).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
-        userRepository.delete(user);
-        doctor.inactive();
+    public ResponseDoctorDto changeDepartment(Long doctorId, Long departmentId){
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
+        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
+
+        doctor.changeDepartment(department);
+
         doctorRepository.save(doctor);
+
+        return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
 }

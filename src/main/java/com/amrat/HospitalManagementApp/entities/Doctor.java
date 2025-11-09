@@ -32,6 +32,9 @@ public class Doctor {
     @OneToMany(mappedBy = "doctor")
     private List<Appointment> appointments = new ArrayList<>();
 
+    @ManyToOne
+    private Department department;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -39,6 +42,48 @@ public class Doctor {
     private boolean isActive;
 
     public Doctor(User user, String name, String email, Set<String> qualifications){
+        validateFields(user, name, email, qualifications);
+
+        this.user = user;
+        this.name = name;
+        this.email = email;
+        this.qualifications = new HashSet<>(qualifications);
+        this.isActive = true;
+    }
+
+    public Doctor(User user, String name, String email, Set<String> qualifications, Department department){
+        validateFields(user, name, email, qualifications);
+
+        if (department == null){
+            throw new IllegalArgumentException("Department is not selected.");
+        }
+
+        this.user = user;
+        this.name = name;
+        this.email = email;
+        this.department = department;
+        this.qualifications = new HashSet<>(qualifications);
+        this.isActive = true;
+    }
+
+    public void changeDepartment(Department department){
+        if (department == null){
+            throw new IllegalArgumentException("Select a department.");
+        }
+
+        if (this.department != null){
+            this.department.getDoctors().remove(this);
+        }
+
+        this.department = department;
+        department.getDoctors().add(this);
+    }
+
+    public void inactive(){
+        this.isActive = false;
+    }
+
+    public void validateFields(User user, String name, String email, Set<String> qualifications){
         if (user == null){
             throw new IllegalArgumentException("User is required");
         }
@@ -54,15 +99,5 @@ public class Doctor {
         if (qualifications == null || qualifications.isEmpty()){
             throw new IllegalArgumentException("Qualifications are required");
         }
-
-        this.user = user;
-        this.name = name;
-        this.email = email;
-        this.qualifications = new HashSet<>(qualifications);
-        this.isActive = true;
-    }
-
-    public void inactive(){
-        this.isActive = false;
     }
 }

@@ -1,6 +1,6 @@
 package com.amrat.HospitalManagementApp.services;
 
-import com.amrat.HospitalManagementApp.dtos.PatientDto;
+import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.repositories.PatientRepository;
@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,9 +1,10 @@
 package com.amrat.HospitalManagementApp.controllers;
 
-import com.amrat.HospitalManagementApp.dtos.PatientDto;
-import com.amrat.HospitalManagementApp.dtos.RequestAppointmentDto;
-import com.amrat.HospitalManagementApp.dtos.ResponseAppointmentDto;
-import com.amrat.HospitalManagementApp.dtos.ResponseDoctorDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.PatientDoctorAppointmentsDto;
+import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.RequestAppointmentDto;
+import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;
+import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
 import com.amrat.HospitalManagementApp.services.DoctorService;
@@ -26,8 +27,8 @@ public class PatientController {
     private final CurrentUserInfo currentUserInfo;
 
     @GetMapping("/appointments")
-    public ResponseEntity<List<ResponseAppointmentDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
-                                                                          @RequestParam(value = "size", defaultValue = "2") Integer pageSize
+    public ResponseEntity<List<PatientDoctorAppointmentsDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+                                                                                 @RequestParam(value = "size", defaultValue = "2") Integer pageSize
     ){
         User user = currentUserInfo.currentUserInfo();
         return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize, user.getId()));
@@ -38,7 +39,7 @@ public class PatientController {
         return ResponseEntity.ok(appointmentService.bookAppointment(appointmentDto));
     }
 
-    @PostMapping("/{appointmentId}/cancel-appointment")
+    @PutMapping("/{appointmentId}/cancel-appointment")
     public ResponseEntity<ResponseAppointmentDto> cancelAppointment(@PathVariable Long appointmentId){
         return ResponseEntity.ok(appointmentService.cancelAppointment(appointmentId));
     }

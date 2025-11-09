@@ -1,9 +1,9 @@
 package com.amrat.HospitalManagementApp.services;
 
-import com.amrat.HospitalManagementApp.dtos.LoginRequestDto;
-import com.amrat.HospitalManagementApp.dtos.LoginResponseDto;
-import com.amrat.HospitalManagementApp.dtos.SignupRequestDto;
-import com.amrat.HospitalManagementApp.dtos.SignupResponseDto;
+import com.amrat.HospitalManagementApp.dtos.auth.LoginRequestDto;
+import com.amrat.HospitalManagementApp.dtos.auth.LoginResponseDto;
+import com.amrat.HospitalManagementApp.dtos.auth.SignupRequestDto;
+import com.amrat.HospitalManagementApp.dtos.auth.SignupResponseDto;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;

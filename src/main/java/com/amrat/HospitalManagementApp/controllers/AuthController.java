@@ -1,9 +1,9 @@
 package com.amrat.HospitalManagementApp.controllers;
 
-import com.amrat.HospitalManagementApp.dtos.LoginRequestDto;
-import com.amrat.HospitalManagementApp.dtos.LoginResponseDto;
-import com.amrat.HospitalManagementApp.dtos.SignupRequestDto;
-import com.amrat.HospitalManagementApp.dtos.SignupResponseDto;
+import com.amrat.HospitalManagementApp.dtos.auth.LoginRequestDto;
+import com.amrat.HospitalManagementApp.dtos.auth.LoginResponseDto;
+import com.amrat.HospitalManagementApp.dtos.auth.SignupRequestDto;
+import com.amrat.HospitalManagementApp.dtos.auth.SignupResponseDto;
 import com.amrat.HospitalManagementApp.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

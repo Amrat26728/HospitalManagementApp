@@ -1,4 +1,4 @@
-package com.amrat.HospitalManagementApp.dtos;
+package com.amrat.HospitalManagementApp.dtos.doctor;
 
 import lombok.Data;
 
@@ -10,4 +10,5 @@ public class RequestDoctorDto {
     private String name;
     private String email;
     private Set<String> qualifications = new HashSet<>();
+    private Long departmentId;
 }

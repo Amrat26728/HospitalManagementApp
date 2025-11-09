@@ -1,4 +1,4 @@
-package com.amrat.HospitalManagementApp.dtos;
+package com.amrat.HospitalManagementApp.dtos.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
