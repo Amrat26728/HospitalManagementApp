@@ -43,9 +43,18 @@ public class DoctorController {
         return ResponseEntity.ok(appointmentService.completeAppointment(appointmentId));
     }
 
+    // change password
     @PutMapping("/change-password")
     public ResponseEntity<Map<String, String>> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
         return ResponseEntity.ok(authService.changePassword(changePasswordDto));
+    }
+
+    // get patient's appointments
+    @GetMapping("/patient/{patientId}/appointments")
+    public AppointmentResponsePage getPatientsAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+                                                           @RequestParam(value = "size", defaultValue = "5") Integer pageSize,
+                                                           @PathVariable Long patientId){
+        return appointmentService.getAppointmentsOfPatient(pageNumber, pageSize, patientId);
     }
 
 }

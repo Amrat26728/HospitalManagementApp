@@ -36,6 +36,7 @@ public class AuthService {
     private final PatientRepository patientRepository;
     private final ModelMapper modelMapper;
     private final CurrentUserInfo currentUserInfo;
+    private final EmailService emailService;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -71,6 +72,8 @@ public class AuthService {
 
         patientRepository.save(patient);
 
+//        emailService.sendVerificationEmail(signupRequestDto.getEmail());
+
         return modelMapper.map(user, SignupResponseDto.class);
     }
 
@@ -87,7 +90,7 @@ public class AuthService {
             throw new IllegalArgumentException("Password must have at least 6 characters.");
         }
 
-        user.changePassword(passwordDto.getNewPassword());
+        user.changePassword(passwordEncoder.encode(passwordDto.getNewPassword()));
 
         userRepository.save(user);
 

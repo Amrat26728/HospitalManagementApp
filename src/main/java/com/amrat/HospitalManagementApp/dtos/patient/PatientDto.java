@@ -9,5 +9,5 @@ public class PatientDto {
     private Long id;
     private String name;
     private String email;
-    private LocalDateTime createdAt;
+    private LocalDateTime createAt;
 }

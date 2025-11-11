@@ -27,6 +27,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private boolean isVerified;
+
     @ElementCollection(fetch = FetchType.EAGER) // this will create new table roles
     @Enumerated(EnumType.STRING)
     private Set<RoleType> roles;
@@ -56,10 +58,15 @@ public class User implements UserDetails {
 
         this.username = username;
         this.password = password;
+        this.isVerified = false;
         this.roles = new HashSet<>(roles);
     }
 
     public void changePassword(String password){
         this.password = password;
+    }
+
+    public void setVerified(){
+        this.isVerified = true;
     }
 }
