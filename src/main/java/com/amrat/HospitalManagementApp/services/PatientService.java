@@ -1,5 +1,6 @@
 package com.amrat.HospitalManagementApp.services;
 
+import com.amrat.HospitalManagementApp.dtos.pages.PatientResponsePage;
 import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
@@ -10,8 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +27,22 @@ public class PatientService {
         return modelMapper.map(patient, PatientDto.class);
     }
 
-    public List<PatientDto> getAllPatients(Integer pageNumber, Integer pageSize){
+    public PatientResponsePage getAllPatients(Integer pageNumber, Integer pageSize){
         int page = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
         int size = pageSize < 0 ? 0 : 5;
         Page<Patient> patients = patientRepository.findAll(PageRequest.of(page, size));
 
-        return patients.stream().map((patient) -> modelMapper.map(patient, PatientDto.class)).toList();
+        Page<PatientDto> patientsDto = patients.map(patient -> modelMapper.map(patient, PatientDto.class));
+
+        return new PatientResponsePage(
+                patientsDto.getContent(),
+                patientsDto.getNumber(),
+                patientsDto.getSize(),
+                patientsDto.getTotalElements(),
+                patientsDto.getTotalPages(),
+                patientsDto.isFirst(),
+                patientsDto.isLast()
+        );
     }
 
 }

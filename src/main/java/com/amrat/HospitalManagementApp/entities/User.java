@@ -58,4 +58,8 @@ public class User implements UserDetails {
         this.password = password;
         this.roles = new HashSet<>(roles);
     }
+
+    public void changePassword(String password){
+        this.password = password;
+    }
 }

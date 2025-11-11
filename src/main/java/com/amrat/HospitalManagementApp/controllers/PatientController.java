@@ -1,12 +1,14 @@
 package com.amrat.HospitalManagementApp.controllers;
 
-import com.amrat.HospitalManagementApp.dtos.appointment.PatientDoctorAppointmentsDto;
+import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
+import com.amrat.HospitalManagementApp.dtos.password.ChangePasswordDto;
 import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
 import com.amrat.HospitalManagementApp.dtos.appointment.RequestAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.entities.User;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
+import com.amrat.HospitalManagementApp.services.AuthService;
 import com.amrat.HospitalManagementApp.services.DoctorService;
 import com.amrat.HospitalManagementApp.services.PatientService;
 import com.amrat.HospitalManagementApp.util.CurrentUserInfo;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/patient")
@@ -25,10 +28,11 @@ public class PatientController {
     private final DoctorService doctorService;
     private final PatientService patientService;
     private final CurrentUserInfo currentUserInfo;
+    private final AuthService authService;
 
     @GetMapping("/appointments")
-    public ResponseEntity<List<PatientDoctorAppointmentsDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
-                                                                                 @RequestParam(value = "size", defaultValue = "2") Integer pageSize
+    public ResponseEntity<AppointmentResponsePage> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+                                                                      @RequestParam(value = "size", defaultValue = "5") Integer pageSize
     ){
         User user = currentUserInfo.currentUserInfo();
         return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize, user.getId()));
@@ -52,6 +56,11 @@ public class PatientController {
     @GetMapping("/me")
     public PatientDto profile(){
         return patientService.profile();
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<Map<String, String>> changePassword(@RequestBody ChangePasswordDto changePasswordDto){
+        return ResponseEntity.ok(authService.changePassword(changePasswordDto));
     }
 
 }

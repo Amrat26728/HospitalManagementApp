@@ -1,12 +1,11 @@
 package com.amrat.HospitalManagementApp.controllers;
 
-import com.amrat.HospitalManagementApp.dtos.appointment.PatientDoctorAppointmentsDto;
-import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.department.RequestDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.department.ResponseDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
-import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
+import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
+import com.amrat.HospitalManagementApp.dtos.pages.PatientResponsePage;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
 import com.amrat.HospitalManagementApp.services.DepartmentService;
 import com.amrat.HospitalManagementApp.services.DoctorService;
@@ -48,21 +47,21 @@ public class AdminController {
 
     // fetch patients
     @GetMapping("/patients")
-    public ResponseEntity<List<PatientDto>> getAllPatients(@RequestParam(value = "page", defaultValue = "0")  Integer pageNumber,
-                                                           @RequestParam(value = "size", defaultValue = "5") Integer pageSize){
+    public ResponseEntity<PatientResponsePage> getAllPatients(@RequestParam(value = "page", defaultValue = "0")  Integer pageNumber,
+                                                              @RequestParam(value = "size", defaultValue = "5") Integer pageSize){
         return ResponseEntity.ok(patientService.getAllPatients(pageNumber, pageSize));
     }
 
     // fetch doctor appointments
     @GetMapping("/doctors/{doctorId}/appointments")
-    public ResponseEntity<List<PatientDoctorAppointmentsDto>> getAppointmentsOfDoctor(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
-                                                                                      @RequestParam(value = "size", defaultValue = "5") Integer pageSize, @PathVariable Long doctorId) {
+    public ResponseEntity<AppointmentResponsePage> getAppointmentsOfDoctor(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+                                                                           @RequestParam(value = "size", defaultValue = "5") Integer pageSize, @PathVariable Long doctorId) {
         return ResponseEntity.ok(appointmentService.getAppointmentsOfDoctor(pageNumber, pageSize, doctorId));
     }
 
     // fetch patient appointments
     @GetMapping("/patients/{patientId}/appointments")
-    public ResponseEntity<List<PatientDoctorAppointmentsDto>> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
+    public ResponseEntity<AppointmentResponsePage> getAllAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber,
                                                                            @RequestParam(value = "size", defaultValue = "5") Integer pageSize, @PathVariable Long patientId
     ){
         return ResponseEntity.ok(appointmentService.getAppointmentsOfPatient(pageNumber, pageSize, patientId));
@@ -90,5 +89,11 @@ public class AdminController {
     @PutMapping("doctors/{doctorId}/departments/{departmentId}/add-doctor")
     public ResponseEntity<ResponseDepartmentDto> addDoctor(@PathVariable Long doctorId, @PathVariable Long departmentId){
         return ResponseEntity.ok(departmentService.addDoctor(doctorId, departmentId));
+    }
+
+    // fetch doctors of a department
+    @GetMapping("/departments/{departmentId}/doctors")
+    public ResponseEntity<List<ResponseDoctorDto>> getDoctorsOfDepartment(@PathVariable Long departmentId){
+        return ResponseEntity.ok(doctorService.getDoctorsOfDepartment(departmentId));
     }
 }

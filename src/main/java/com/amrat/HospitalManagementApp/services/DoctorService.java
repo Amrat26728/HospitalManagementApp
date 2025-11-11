@@ -51,6 +51,7 @@ public class DoctorService {
         return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
+    // create doctor
     @Transactional
     public ResponseDoctorDto createDoctor(RequestDoctorDto doctorDto){
         User user = userRepository.findByUsername(doctorDto.getEmail()).orElse(null);
@@ -81,6 +82,7 @@ public class DoctorService {
         return modelMapper.map(doctor, ResponseDoctorDto.class);
     }
 
+    // change department of doctor
     @Transactional
     public ResponseDoctorDto changeDepartment(Long doctorId, Long departmentId){
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
@@ -91,6 +93,13 @@ public class DoctorService {
         doctorRepository.save(doctor);
 
         return modelMapper.map(doctor, ResponseDoctorDto.class);
+    }
+
+    // fetch doctors of a department
+    public List<ResponseDoctorDto> getDoctorsOfDepartment(Long departmentId){
+        Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
+
+        return doctorRepository.findByDepartment(department).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
     }
 
 }
