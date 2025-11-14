@@ -2,6 +2,7 @@ package com.amrat.HospitalManagementApp.services;
 
 import com.amrat.HospitalManagementApp.dtos.department.RequestDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.department.ResponseDepartmentDto;
+import com.amrat.HospitalManagementApp.dtos.doctor.DoctorDepartmentDto;
 import com.amrat.HospitalManagementApp.entities.Department;
 import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.repositories.DepartmentRepository;
@@ -44,7 +45,7 @@ public class DepartmentService {
 
     // add doctor to department
     @Transactional
-    public ResponseDepartmentDto addDoctor(Long doctorId, Long departmentId){
+    public DoctorDepartmentDto addDoctor(Long doctorId, Long departmentId){
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
 
@@ -58,7 +59,7 @@ public class DepartmentService {
         doctor.changeDepartment(department);
         doctorRepository.save(doctor);
 
-        return modelMapper.map(department, ResponseDepartmentDto.class);
+        return modelMapper.map(doctor, DoctorDepartmentDto.class);
     }
 
 }

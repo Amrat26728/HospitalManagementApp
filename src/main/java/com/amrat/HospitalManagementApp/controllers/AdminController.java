@@ -2,6 +2,7 @@ package com.amrat.HospitalManagementApp.controllers;
 
 import com.amrat.HospitalManagementApp.dtos.department.RequestDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.department.ResponseDepartmentDto;
+import com.amrat.HospitalManagementApp.dtos.doctor.DoctorDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
@@ -34,14 +35,8 @@ public class AdminController {
 
     // fetch doctors and filter active or non-active
     @GetMapping("/doctors")
-    public ResponseEntity<List<ResponseDoctorDto>> getDoctors(@RequestParam Boolean active){
+    public ResponseEntity<List<ResponseDoctorDto>> getDoctors(@RequestParam(required = false) Boolean active){
         List<ResponseDoctorDto> doctors = doctorService.getDoctors(active);
-        return ResponseEntity.ok(doctors);
-    }
-
-    @GetMapping("/all-doctors")
-    public ResponseEntity<List<ResponseDoctorDto>> getDoctors(){
-        List<ResponseDoctorDto> doctors = doctorService.getAllDoctors();
         return ResponseEntity.ok(doctors);
     }
 
@@ -81,13 +76,13 @@ public class AdminController {
 
     // change/assign department of a doctor
     @PutMapping("/doctors/{doctorId}/departments/{departmentId}")
-    public ResponseEntity<ResponseDoctorDto> changeDepartment(@PathVariable Long doctorId, @PathVariable Long departmentId){
+    public ResponseEntity<DoctorDepartmentDto> changeDepartment(@PathVariable Long doctorId, @PathVariable Long departmentId){
         return ResponseEntity.ok(doctorService.changeDepartment(doctorId, departmentId));
     }
 
     // add doctor to department
     @PutMapping("doctors/{doctorId}/departments/{departmentId}/add-doctor")
-    public ResponseEntity<ResponseDepartmentDto> addDoctor(@PathVariable Long doctorId, @PathVariable Long departmentId){
+    public ResponseEntity<DoctorDepartmentDto> addDoctor(@PathVariable Long doctorId, @PathVariable Long departmentId){
         return ResponseEntity.ok(departmentService.addDoctor(doctorId, departmentId));
     }
 

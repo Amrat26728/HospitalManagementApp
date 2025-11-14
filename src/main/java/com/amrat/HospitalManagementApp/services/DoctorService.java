@@ -1,5 +1,6 @@
 package com.amrat.HospitalManagementApp.services;
 
+import com.amrat.HospitalManagementApp.dtos.doctor.DoctorDepartmentDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.entities.Department;
@@ -34,12 +35,13 @@ public class DoctorService {
 
     // get doctors
     public List<ResponseDoctorDto> getDoctors(Boolean isActive){
-        return doctorRepository.findByIsActive(isActive).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
-    }
-
-    // get all doctors
-    public List<ResponseDoctorDto> getAllDoctors(){
-        return doctorRepository.findAll().stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+        if (isActive == null){
+            return doctorRepository.findAll().stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+        }
+        if (isActive){
+            return doctorRepository.findByIsActive(true).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
+        }
+        return doctorRepository.findByIsActive(false).stream().map(doctor -> modelMapper.map(doctor, ResponseDoctorDto.class)).toList();
     }
 
     // get doctor profile
@@ -84,7 +86,7 @@ public class DoctorService {
 
     // change department of doctor
     @Transactional
-    public ResponseDoctorDto changeDepartment(Long doctorId, Long departmentId){
+    public DoctorDepartmentDto changeDepartment(Long doctorId, Long departmentId){
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
 
@@ -92,7 +94,7 @@ public class DoctorService {
 
         doctorRepository.save(doctor);
 
-        return modelMapper.map(doctor, ResponseDoctorDto.class);
+        return modelMapper.map(doctor, DoctorDepartmentDto.class);
     }
 
     // fetch doctors of a department

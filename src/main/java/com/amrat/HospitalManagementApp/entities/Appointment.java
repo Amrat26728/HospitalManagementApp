@@ -1,5 +1,6 @@
 package com.amrat.HospitalManagementApp.entities;
 
+import com.amrat.HospitalManagementApp.entities.types.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,6 +40,9 @@ public class Appointment {
     @Column(nullable = false)
     private boolean done;
 
+    @Column(nullable = false)
+    private AppointmentStatus status;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -71,6 +75,7 @@ public class Appointment {
         this.appointmentTime = appointmentTime;
         this.canceled = false;
         this.done = false;
+        this.status = AppointmentStatus.PENDING;
     }
 
     public void cancel(){
@@ -85,5 +90,9 @@ public class Appointment {
             throw new IllegalArgumentException("Canceled appointment can not be marked complete.");
         }
         this.done = true;
+    }
+
+    public void changeStatus(AppointmentStatus status){
+        this.status = status;
     }
 }
