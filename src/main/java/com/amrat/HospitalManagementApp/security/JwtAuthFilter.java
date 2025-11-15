@@ -47,6 +47,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null){
                 User user = userRepository.findByUsername(username).orElseThrow();
 
+                if (!user.isVerified()){
+                    throw new IllegalArgumentException("Account is not verified.");
+                }
+
+                if (!user.isActive()){
+                    throw new IllegalArgumentException("Account is inactivated. Please contact Admin");
+                }
+
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }

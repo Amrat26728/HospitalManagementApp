@@ -13,6 +13,7 @@ import com.amrat.HospitalManagementApp.repositories.UserRepository;
 import com.amrat.HospitalManagementApp.util.CurrentUserInfo;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,6 +90,10 @@ public class DoctorService {
     public DoctorDepartmentDto changeDepartment(Long doctorId, Long departmentId){
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor does not exist."));
         Department department = departmentRepository.findById(departmentId).orElseThrow(() -> new IllegalArgumentException("Department does not exist."));
+
+        if (doctor.getDepartment() == department){
+            throw new DuplicateKeyException("Doctor is already in " + department.getName() + " department.");
+        }
 
         doctor.changeDepartment(department);
 

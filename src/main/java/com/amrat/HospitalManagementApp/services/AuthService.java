@@ -7,9 +7,11 @@ import com.amrat.HospitalManagementApp.dtos.auth.SignupResponseDto;
 import com.amrat.HospitalManagementApp.dtos.password.ChangePasswordDto;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
+import com.amrat.HospitalManagementApp.entities.VerificationToken;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;
 import com.amrat.HospitalManagementApp.repositories.PatientRepository;
 import com.amrat.HospitalManagementApp.repositories.UserRepository;
+import com.amrat.HospitalManagementApp.repositories.VerificationTokenRepository;
 import com.amrat.HospitalManagementApp.util.AuthUtil;
 import com.amrat.HospitalManagementApp.util.CurrentUserInfo;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +23,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class AuthService {
     private final ModelMapper modelMapper;
     private final CurrentUserInfo currentUserInfo;
     private final EmailService emailService;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
         Authentication authentication = authenticationManager.authenticate(
@@ -44,6 +46,14 @@ public class AuthService {
         );
 
         User user = (User) authentication.getPrincipal();
+
+        if (!user.isVerified()){
+            throw new IllegalArgumentException("Account is not verified.");
+        }
+
+        if (!user.isActive()){
+            throw new IllegalArgumentException("Account is inactivated.");
+        }
 
         String token = authUtil.generateAccessToken(user);
 
@@ -59,7 +69,7 @@ public class AuthService {
         }
 
         Set<RoleType> roles = new HashSet<>();
-        roles.add(RoleType.PATIENT);
+        roles.add(RoleType.ADMIN);
 
         if (signupRequestDto.getPassword().isEmpty()){
             throw new IllegalArgumentException("Password is required.");
@@ -68,13 +78,69 @@ public class AuthService {
         user = new User(signupRequestDto.getEmail(), passwordEncoder.encode(signupRequestDto.getPassword()), roles);
         user = userRepository.save(user);
 
-        Patient patient = new Patient(user, signupRequestDto.getName(), signupRequestDto.getEmail());
+//        Patient patient = new Patient(user, signupRequestDto.getName(), signupRequestDto.getEmail());
+//
+//        patientRepository.save(patient);
 
-        patientRepository.save(patient);
+        // create verification token and send in email
+        String token = UUID.randomUUID().toString();
+        VerificationToken verificationToken = new VerificationToken(token, user, LocalDateTime.now().plusMinutes(30));
+        verificationTokenRepository.save(verificationToken);
 
-//        emailService.sendVerificationEmail(signupRequestDto.getEmail());
+//        emailService.sendVerificationEmail(signupRequestDto.getEmail(), token);
 
         return modelMapper.map(user, SignupResponseDto.class);
+    }
+
+    // verify user
+    @Transactional
+    public Map<String, String> verify(String token) {
+
+        VerificationToken verificationToken = verificationTokenRepository
+                .findByToken(token);
+
+        if (verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Verification token expired.");
+        }
+
+        User user = verificationToken.getUser();
+
+        if (user.isVerified()) {
+            throw new IllegalStateException("User already verified");
+        }
+
+        user.setVerified();
+        userRepository.save(user);
+
+        verificationTokenRepository.delete(verificationToken);
+
+        return Map.of("message", "Account verified successfully. You can now log in.");
+    }
+
+    // resend user verification token
+    @Transactional
+    public Map<String, String> resendVerificationToken(String email) {
+
+        User user = userRepository.findByUsername(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        if (user.isVerified()) {
+            throw new IllegalStateException("User already verified");
+        }
+
+        // Delete any old tokens for this user
+        verificationTokenRepository.deleteByUser(user);
+
+        // Create new token
+        String token = UUID.randomUUID().toString();
+
+        VerificationToken newToken = new VerificationToken(token, user, LocalDateTime.now().plusMinutes(30));
+
+        verificationTokenRepository.save(newToken);
+
+        emailService.sendVerificationEmail(email, token);
+
+        return Map.of("message", "A verification link has been sent to your email.");
     }
 
     public Map<String, String> changePassword(ChangePasswordDto passwordDto){

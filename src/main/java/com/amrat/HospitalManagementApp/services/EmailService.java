@@ -32,7 +32,7 @@ public class EmailService {
     }
 
     @Async
-    public void sendVerificationEmail(String to) {
+    public void sendVerificationEmail(String to, String token) {
 
         try{
             MimeMessage mail = mailSender.createMimeMessage();
@@ -45,7 +45,7 @@ public class EmailService {
                     "<html><body>" +
                             "<h3>Welcome to Hospital Management System</h3>" +
                             "<p>Click the button below to verify your email address:</p>" +
-                            "<a href='http://your-verification-link' " +
+                            "<a href='http://your-verification-link/token?token={token}' " +
                             "style='padding:10px 20px;background-color:#4CAF50;color:white;text-decoration:none;border-radius:5px;'>" +
                             "Verify Email</a>" +
                             "</body></html>",
