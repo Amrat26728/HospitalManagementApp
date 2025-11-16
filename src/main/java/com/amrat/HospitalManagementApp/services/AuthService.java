@@ -61,7 +61,7 @@ public class AuthService {
     }
 
     @Transactional
-    public SignupResponseDto signup(SignupRequestDto signupRequestDto) {
+    public Map<String, String> signup(SignupRequestDto signupRequestDto) {
         User user = userRepository.findByUsername(signupRequestDto.getEmail()).orElse(null);
 
         if (user != null){
@@ -69,7 +69,7 @@ public class AuthService {
         }
 
         Set<RoleType> roles = new HashSet<>();
-        roles.add(RoleType.ADMIN);
+        roles.add(RoleType.PATIENT);
 
         if (signupRequestDto.getPassword().isEmpty()){
             throw new IllegalArgumentException("Password is required.");
@@ -78,18 +78,21 @@ public class AuthService {
         user = new User(signupRequestDto.getEmail(), passwordEncoder.encode(signupRequestDto.getPassword()), roles);
         user = userRepository.save(user);
 
-//        Patient patient = new Patient(user, signupRequestDto.getName(), signupRequestDto.getEmail());
-//
-//        patientRepository.save(patient);
+        Patient patient = new Patient(user, signupRequestDto.getName(), signupRequestDto.getEmail());
+
+        patientRepository.save(patient);
 
         // create verification token and send in email
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken(token, user, LocalDateTime.now().plusMinutes(30));
         verificationTokenRepository.save(verificationToken);
 
+        // in future also send user id to user
+        System.out.println("verification token: " + token);
+
 //        emailService.sendVerificationEmail(signupRequestDto.getEmail(), token);
 
-        return modelMapper.map(user, SignupResponseDto.class);
+        return Map.of("message", "Verification link has been sent to your email.");
     }
 
     // verify user
@@ -99,8 +102,13 @@ public class AuthService {
         VerificationToken verificationToken = verificationTokenRepository
                 .findByToken(token);
 
+        if (verificationToken == null) {
+            throw new IllegalArgumentException("You have not created account yet. create your account first.");
+        }
+
         if (verificationToken.getExpiresAt().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Verification token expired.");
+            // send email on user email and then throw exception
+            throw new IllegalArgumentException("Verification token expired. Token is sent to your email.");
         }
 
         User user = verificationToken.getUser();
@@ -118,7 +126,6 @@ public class AuthService {
     }
 
     // resend user verification token
-    @Transactional
     public Map<String, String> resendVerificationToken(String email) {
 
         User user = userRepository.findByUsername(email)
@@ -129,7 +136,11 @@ public class AuthService {
         }
 
         // Delete any old tokens for this user
-        verificationTokenRepository.deleteByUser(user);
+        VerificationToken exists = verificationTokenRepository.findByUser(user);
+
+        if (exists != null){
+            verificationTokenRepository.delete(exists);
+        }
 
         // Create new token
         String token = UUID.randomUUID().toString();
@@ -138,7 +149,7 @@ public class AuthService {
 
         verificationTokenRepository.save(newToken);
 
-        emailService.sendVerificationEmail(email, token);
+//        emailService.sendVerificationEmail(email, token);
 
         return Map.of("message", "A verification link has been sent to your email.");
     }

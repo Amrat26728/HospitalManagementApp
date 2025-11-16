@@ -24,16 +24,16 @@ public class AuthController {
     }
 
     @PostMapping("/signup")
-    public ResponseEntity<SignupResponseDto> signup(@RequestBody SignupRequestDto signupRequestDto){
+    public ResponseEntity<Map<String, String>> signup(@RequestBody SignupRequestDto signupRequestDto){
         return ResponseEntity.ok(authService.signup(signupRequestDto));
     }
 
-    @PutMapping("/auth/{token}")
+    @PutMapping("/verify/{token}")
     public ResponseEntity<Map<String, String>> verify(@PathVariable String token){
         return ResponseEntity.ok(authService.verify(token));
     }
 
-    @PutMapping("/auth/resend-verification-link/{email}")
+    @PostMapping("/resend-verification-link/{email}")
     public ResponseEntity<Map<String, String>> resendVerificationToken(@PathVariable String email){
         return ResponseEntity.ok(authService.resendVerificationToken(email));
     }
