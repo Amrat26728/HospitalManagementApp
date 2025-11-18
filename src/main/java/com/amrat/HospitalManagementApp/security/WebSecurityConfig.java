@@ -35,7 +35,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/admin/**").hasRole(RoleType.ADMIN.name())
                         .requestMatchers("/patient/**").hasRole(RoleType.PATIENT.name())
                         .requestMatchers("/doctor/**").hasRole(RoleType.DOCTOR.name())
-                        .anyRequest().authenticated())
+                        .requestMatchers("/authenticated/**").authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionHandlingConfigurer -> {
                     exceptionHandlingConfigurer.accessDeniedHandler(((request, response, accessDeniedException) -> {

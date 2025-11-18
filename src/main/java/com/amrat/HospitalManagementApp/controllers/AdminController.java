@@ -7,6 +7,7 @@ import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
 import com.amrat.HospitalManagementApp.dtos.pages.PatientResponsePage;
+import com.amrat.HospitalManagementApp.entities.types.RoleType;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
 import com.amrat.HospitalManagementApp.services.DepartmentService;
 import com.amrat.HospitalManagementApp.services.DoctorService;
@@ -90,5 +91,11 @@ public class AdminController {
     @GetMapping("/departments/{departmentId}/doctors")
     public ResponseEntity<List<ResponseDoctorDto>> getDoctorsOfDepartment(@PathVariable Long departmentId){
         return ResponseEntity.ok(doctorService.getDoctorsOfDepartment(departmentId));
+    }
+
+    // fetch RoleTypes
+    @GetMapping("/roles")
+    public RoleType[] getRoles(){
+        return RoleType.values();
     }
 }
