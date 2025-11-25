@@ -7,11 +7,10 @@ import com.amrat.HospitalManagementApp.dtos.doctor.RequestDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.doctor.ResponseDoctorDto;
 import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
 import com.amrat.HospitalManagementApp.dtos.pages.PatientResponsePage;
+import com.amrat.HospitalManagementApp.dtos.test.AddTestDto;
+import com.amrat.HospitalManagementApp.dtos.test.TestDto;
 import com.amrat.HospitalManagementApp.entities.types.RoleType;
-import com.amrat.HospitalManagementApp.services.AppointmentService;
-import com.amrat.HospitalManagementApp.services.DepartmentService;
-import com.amrat.HospitalManagementApp.services.DoctorService;
-import com.amrat.HospitalManagementApp.services.PatientService;
+import com.amrat.HospitalManagementApp.services.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +26,10 @@ public class AdminController {
     private final PatientService patientService;
     private final AppointmentService appointmentService;
     private final DepartmentService departmentService;
+    private final TestService testService;
 
     // create doctor
-    @PostMapping("/create-doctor")
+    @PostMapping("/doctors")
     public ResponseDoctorDto createDoctor(@RequestBody RequestDoctorDto doctorDto){
         return doctorService.createDoctor(doctorDto);
     }
@@ -70,7 +70,7 @@ public class AdminController {
     }
 
     // create department
-    @PostMapping("/departments/create-department")
+    @PostMapping("/departments")
     public ResponseEntity<ResponseDepartmentDto> createDepartment(@RequestBody RequestDepartmentDto departmentDto){
         return ResponseEntity.ok(departmentService.createDepartment(departmentDto));
     }
@@ -97,5 +97,15 @@ public class AdminController {
     @GetMapping("/roles")
     public RoleType[] getRoles(){
         return RoleType.values();
+    }
+
+    @GetMapping("/tests")
+    public ResponseEntity<List<TestDto>> getTests(){
+        return ResponseEntity.ok(testService.getTests());
+    }
+
+    @PostMapping("/tests")
+    public ResponseEntity<TestDto> getTests(@RequestBody AddTestDto testDto){
+        return ResponseEntity.ok(testService.addTest(testDto));
     }
 }
