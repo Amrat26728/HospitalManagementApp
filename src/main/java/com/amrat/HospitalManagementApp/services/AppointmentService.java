@@ -8,6 +8,7 @@ import com.amrat.HospitalManagementApp.entities.Appointment;
 import com.amrat.HospitalManagementApp.entities.Doctor;
 import com.amrat.HospitalManagementApp.entities.Patient;
 import com.amrat.HospitalManagementApp.entities.User;
+import com.amrat.HospitalManagementApp.entities.types.AppointmentStatus;
 import com.amrat.HospitalManagementApp.repositories.AppointmentRepository;
 import com.amrat.HospitalManagementApp.repositories.DoctorRepository;
 import com.amrat.HospitalManagementApp.repositories.PatientRepository;
@@ -42,15 +43,7 @@ public class AppointmentService {
 
         Page<PatientDoctorAppointmentsDto> appointmentsDto = appointments.map(appointment -> modelMapper.map(appointment, PatientDoctorAppointmentsDto.class));
 
-        return new AppointmentResponsePage(
-                appointmentsDto.getContent(),
-                appointmentsDto.getNumber(),
-                appointmentsDto.getSize(),
-                appointmentsDto.getTotalElements(),
-                appointmentsDto.getTotalPages(),
-                appointmentsDto.isFirst(),
-                appointmentsDto.isLast()
-        );
+        return appointmentResponsePage(appointmentsDto);
     }
 
     // get current logged-in doctor appointments
@@ -63,15 +56,7 @@ public class AppointmentService {
 
         Page<PatientDoctorAppointmentsDto> appointmentsDto = appointments.map(appointment -> modelMapper.map(appointment, PatientDoctorAppointmentsDto.class));
 
-        return new AppointmentResponsePage(
-                appointmentsDto.getContent(),
-                appointmentsDto.getNumber(),
-                appointmentsDto.getSize(),
-                appointmentsDto.getTotalElements(),
-                appointmentsDto.getTotalPages(),
-                appointmentsDto.isFirst(),
-                appointmentsDto.isLast()
-        );
+        return appointmentResponsePage(appointmentsDto);
     }
 
     // patient book appointment
@@ -94,7 +79,7 @@ public class AppointmentService {
     // patient cancel appointment
     @Transactional
     public ResponseAppointmentDto cancelAppointment(Long appointmentId){
-        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment Does not exist."));
+        Appointment appointment = getAppointment(appointmentId);
         User currentUser = currentUserInfo.currentUserInfo();
 
         // check if appointment belongs to currently logged-in user or not
@@ -102,21 +87,50 @@ public class AppointmentService {
             throw new AuthorizationDeniedException("You are not authorized to cancel this appointment.");
         }
 
-        appointment.cancel();
+        appointment.changeStatus(AppointmentStatus.CANCELED);
         appointment = appointmentRepository.save(appointment);
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
     }
 
-    // doctor make appointment done
+    // doctor make appointment complete
     @Transactional
     public ResponseAppointmentDto completeAppointment(Long appointmentId){
         User user = currentUserInfo.currentUserInfo();
-        Appointment appointment = appointmentRepository.findById(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment does not exist"));
+        Appointment appointment = getAppointment(appointmentId);
         if (!user.getId().equals(appointment.getDoctor().getId())){
             throw new IllegalArgumentException("Appointment does not belong to you.");
         }
-        appointment.done();
+        appointment.changeStatus(AppointmentStatus.COMPLETED);
         appointment = appointmentRepository.save(appointment);
         return modelMapper.map(appointment, ResponseAppointmentDto.class);
+    }
+
+    // fetch new appointments for receptionist
+    public AppointmentResponsePage getPendingAppointments(Integer pageNumber){
+        int safePage = (pageNumber != null && pageNumber >= 0) ? pageNumber : 0;
+        Page<Appointment> appointments = appointmentRepository.findByStatus(AppointmentStatus.PENDING, PageRequest.of(safePage, 10));
+        Page<PatientDoctorAppointmentsDto> appointmentsDto = appointments.map(appointment -> modelMapper.map(appointment, PatientDoctorAppointmentsDto.class));
+        return appointmentResponsePage(appointmentsDto);
+    }
+
+
+
+
+
+    ////////////////// below is reused code
+    public Appointment getAppointment(Long appointmentId){
+        return appointmentRepository.findById(appointmentId).orElseThrow(() -> new IllegalArgumentException("Appointment does not exist"));
+    }
+
+    public AppointmentResponsePage appointmentResponsePage(Page<PatientDoctorAppointmentsDto> appointmentsDto){
+        return new AppointmentResponsePage(
+                appointmentsDto.getContent(),
+                appointmentsDto.getNumber(),
+                appointmentsDto.getSize(),
+                appointmentsDto.getTotalElements(),
+                appointmentsDto.getTotalPages(),
+                appointmentsDto.isFirst(),
+                appointmentsDto.isLast()
+        );
     }
 }

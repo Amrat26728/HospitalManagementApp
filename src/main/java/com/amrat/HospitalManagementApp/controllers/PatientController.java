@@ -1,7 +1,7 @@
 package com.amrat.HospitalManagementApp.controllers;
 
 import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
-import com.amrat.HospitalManagementApp.dtos.password.ChangePasswordDto;
+import com.amrat.HospitalManagementApp.dtos.changepassword.ChangePasswordDto;
 import com.amrat.HospitalManagementApp.dtos.patient.PatientDto;
 import com.amrat.HospitalManagementApp.dtos.appointment.RequestAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;

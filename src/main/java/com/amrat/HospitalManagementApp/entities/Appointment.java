@@ -35,12 +35,6 @@ public class Appointment {
     private String reason;
 
     @Column(nullable = false)
-    private boolean canceled;
-
-    @Column(nullable = false)
-    private boolean done;
-
-    @Column(nullable = false)
     private AppointmentStatus status;
 
     @CreationTimestamp
@@ -73,23 +67,7 @@ public class Appointment {
         this.reason = reason;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
-        this.canceled = false;
-        this.done = false;
         this.status = AppointmentStatus.PENDING;
-    }
-
-    public void cancel(){
-        if (this.done){
-            throw new IllegalArgumentException("Completed appointment can not be canceled.");
-        }
-        this.canceled = true;
-    }
-
-    public void done() {
-        if (this.canceled){
-            throw new IllegalArgumentException("Canceled appointment can not be marked complete.");
-        }
-        this.done = true;
     }
 
     public void changeStatus(AppointmentStatus status){

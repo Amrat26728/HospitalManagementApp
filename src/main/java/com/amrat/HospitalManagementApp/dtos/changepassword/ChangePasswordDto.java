@@ -1,4 +1,4 @@
-package com.amrat.HospitalManagementApp.dtos.password;
+package com.amrat.HospitalManagementApp.dtos.changepassword;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

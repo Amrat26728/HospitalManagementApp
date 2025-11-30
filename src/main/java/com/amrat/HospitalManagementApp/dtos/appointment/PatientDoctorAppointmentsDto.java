@@ -1,5 +1,6 @@
 package com.amrat.HospitalManagementApp.dtos.appointment;
 
+import com.amrat.HospitalManagementApp.entities.types.AppointmentStatus;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -12,6 +13,5 @@ public class PatientDoctorAppointmentsDto {
     private LocalTime appointmentTime;
     private String reason;
     private Long doctorId;
-    private boolean canceled;
-    private boolean done;
+    private AppointmentStatus status;
 }
