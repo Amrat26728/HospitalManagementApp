@@ -26,8 +26,8 @@ public class TestService {
     @Transactional
     public TestDto addTest(AddTestDto testDto){
         Test test = new Test(testDto.getName(), testDto.getDescription());
-        Test t = testRepository.save(test);
-        return modelMapper.map(t, TestDto.class);
+        test = testRepository.save(test);
+        return modelMapper.map(test, TestDto.class);
     }
 
 }

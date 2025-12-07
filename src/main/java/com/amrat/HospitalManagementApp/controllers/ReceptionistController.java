@@ -1,13 +1,11 @@
 package com.amrat.HospitalManagementApp.controllers;
 
+import com.amrat.HospitalManagementApp.dtos.appointment.ResponseAppointmentDto;
 import com.amrat.HospitalManagementApp.dtos.pages.AppointmentResponsePage;
 import com.amrat.HospitalManagementApp.services.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/receptionist")
@@ -19,6 +17,11 @@ public class ReceptionistController {
     @GetMapping("/pending-appointments")
     public ResponseEntity<AppointmentResponsePage> getPendingAppointments(@RequestParam(value = "page", defaultValue = "0") Integer pageNumber){
         return ResponseEntity.ok(appointmentService.getPendingAppointments(pageNumber));
+    }
+
+    @PutMapping("/pending-appointments/{appointmentId}")
+    public ResponseEntity<ResponseAppointmentDto> confirmAppointment(Long appointmentId){
+        return ResponseEntity.ok(appointmentService.confirmAppointment(appointmentId));
     }
 
 }

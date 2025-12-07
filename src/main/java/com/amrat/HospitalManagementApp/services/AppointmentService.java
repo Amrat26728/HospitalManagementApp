@@ -113,6 +113,15 @@ public class AppointmentService {
         return appointmentResponsePage(appointmentsDto);
     }
 
+    // confirm appointment
+    @Transactional
+    public ResponseAppointmentDto confirmAppointment(Long appointmentId){
+        Appointment appointment = getAppointment(appointmentId);
+        appointment.changeStatus(AppointmentStatus.CONFIRMED);
+        appointment = appointmentRepository.save(appointment);
+        return modelMapper.map(appointment, ResponseAppointmentDto.class);
+    }
+
 
 
 
